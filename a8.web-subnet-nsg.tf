@@ -14,3 +14,32 @@ resource "azurerm_network_security_group" "web_subnet_nsg" {
   resource_group_name = azurerm_resource_group.rg.name 
   location            = azurerm_resource_group.rg.location
 }
+
+#assocaite the nsg with subnet
+resource "azurerm_subnet_network_security_group_association" "web_subnet_nsg_associate" {
+   subnet_id                 = azurerm_subnet.websubnet.id
+   network_security_group_id = azurerm_network_security_group.web_subnet_nsg.id
+}
+
+locals {
+  web_inbound_port = {
+    "100" : "80",
+    "110" : "443",
+    "120" : "22" #in terraform if your key start with numberic agains the key the value you are going to put : value
+  }
+}
+#nsg inbound rule for webtier subnet
+resource "azurerm_network_security_rule" "web_nsg_rule_inbound" {
+  for_each = local.web_inbound_port
+    name                       = "Rule-Port-${each.value}"
+    priority                   = each.key
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = each.value
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+    resource_group_name = azurerm_resource_group.rg.name 
+    network_security_group_name = azurerm_network_security_group.web_subnet_nsg.name 
+  }
