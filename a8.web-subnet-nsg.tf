@@ -17,6 +17,12 @@ resource "azurerm_network_security_group" "web_subnet_nsg" {
 
 #assocaite the nsg with subnet
 resource "azurerm_subnet_network_security_group_association" "web_subnet_nsg_associate" {
+  depends_on = [
+    azurerm_network_security_rule.web_nsg_rule_inbound
+  ]
+  #it will create an explicit dependency on those resources
+  #it will increase the time to create the resource. 
+  #every nsg rule you have created will be disassociate from nsg and it will re associate. 
    subnet_id                 = azurerm_subnet.websubnet.id
    network_security_group_id = azurerm_network_security_group.web_subnet_nsg.id
 }
