@@ -16,33 +16,49 @@ sudo echo '<!DOCTYPE html> <html> <body style="background-color:rgb(250, 210, 21
 sudo curl -H "Metadata:true" --noproxy "*" "http://169.254.169.254/metadata/instance?api-version=2020-09-01" -o /var/www/html/app1/metadata.html
 CUSTOM_DATA
 }
+/*data "azurerm_shared_image" "example" {
+  name                = "avd-image"
+  gallery_name        = "sigyeiu"
+  resource_group_name = "rg-shared-resources1"
+}*/
 resource "azurerm_linux_virtual_machine" "web_linuxvm" {
-  name                = "${local.resource_name_prefix}-web-linux-vm"
+  for_each = var.web_linux_instance_count
+  name                = "${local.resource_name_prefix}-web-linux-vm-${each.key}"
   resource_group_name = azurerm_resource_group.rg.name 
   location = azurerm_resource_group.rg.location
   size                = "Standard_DS1_V2"
   admin_username      = "azureuser"
   network_interface_ids = [
-    azurerm_network_interface.web_linux_vm_nic.id,
+    azurerm_network_interface.web_linux_vm_nic[each.key].id,
   ]
 
   admin_ssh_key {
     username   = "azureuser"
     public_key = file("${path.module}/ssh-keys/terraform-azure.pub")
   }
-
+  
+  /*storage_image_reference {
+        id = "${data.azurerm_shared_image.example.id}"
+    }*/
+//source_image_id = data.azurerm_shared_image.example.id
+source_image_reference {
+  publisher = "RedHat"
+  offer = "RHEL"
+  sku = "83-gen2"
+  version = "latest"
+}
   os_disk {
     caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
    
   }
 
-  source_image_reference {
+  /*source_image_reference {
     publisher = "RedHat"
     offer     = "RHEL"
     sku       = "83-gen2"
     version   = "latest"
-  }
+  }*/
   custom_data = base64encode(local.webvm_custom_data)
   #custom_data = filebase64(${path.module}/app-scripts/redhat-vm-script.sh)
 }

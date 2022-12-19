@@ -1,4 +1,4 @@
-#3create a null resource and provisioned. 
+/*#3create a null resource and provisioned. 
 resource "null_resource" "null_resource_to_copy_ssh" {
   ##connection block we will create
   connection {
@@ -22,4 +22,4 @@ resource "null_resource" "null_resource_to_copy_ssh" {
     ]
   }
 
-}
+}*/

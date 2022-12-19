@@ -1,4 +1,4 @@
-resource "azurerm_public_ip" "bastion_linux_publicip" {
+/*resource "azurerm_public_ip" "bastion_linux_publicip" {
   name = "${local.resource_name_prefix}-bastion-linux-publicip"
   resource_group_name = azurerm_resource_group.rg.name 
   location = azurerm_resource_group.rg.location
@@ -50,4 +50,4 @@ resource "azurerm_linux_virtual_machine" "bstion_linuxvm" {
   }
   #custom_data = base64encode(local.webvm_custom_data)
   #custom_data = filebase64(${path.module}/app-scripts/redhat-vm-script.sh)
-}
+}*/
